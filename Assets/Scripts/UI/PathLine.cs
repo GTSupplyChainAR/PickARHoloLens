@@ -25,5 +25,12 @@ namespace PickAR.UI {
                 spriteSheet.CalcTextureSize();
             }
         }
+
+        /// <summary>
+        /// Plays the line animation.
+        /// </summary>
+        public void Play() {
+            GetComponent<SpriteSheet>().Play();
+        }
     }
 }

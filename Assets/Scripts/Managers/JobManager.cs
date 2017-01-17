@@ -81,6 +81,19 @@ namespace PickAR.Managers {
         }
 
         /// <summary>
+        /// Updates the object.
+        /// </summary>
+        private void Update() {
+            if (jobActive) {
+                if (jobFinished) {
+                    SetCurrentPoint(startPoint);
+                } else {
+                    PickNextItem();
+                }
+            }
+        }
+
+        /// <summary>
         /// Creates a new job for the user to complete.
         /// </summary>
         /// <param name="targetArray">Items that need to be collected to complete the job.</param>
@@ -93,7 +106,6 @@ namespace PickAR.Managers {
             startPoint = user.transform.position;
             SetJobActive(true);
             progressFraction = 0;
-            PickNextItem();
         }
 
         /// <summary>
@@ -118,10 +130,8 @@ namespace PickAR.Managers {
             targetItems.Remove(item);
             if (targetItems.Count == 0) {
                 progressFraction = 1;
-                SetCurrentPoint(startPoint);
             } else {
                 progressFraction = (totalItems - remainingItems) / (float) totalItems;
-                PickNextItem();
             }
         }
 
@@ -138,7 +148,16 @@ namespace PickAR.Managers {
         /// </summary>
         /// <returns>The next item to go to.</returns>
         public void PickNextItem() {
-            currentItem = targetItems[0];
+            Item closestItem = null;
+            float closestDistance = Mathf.Infinity;
+            foreach (Item item in targetItems) {
+                float currentDistance = Navigator.instance.GetPathDistance(user.transform.position, item.transform.position);
+                if (closestDistance > currentDistance) {
+                    closestItem = item;
+                    closestDistance = currentDistance;
+                }
+            }
+            currentItem = closestItem;
             SetCurrentPoint(currentItem.transform.position);
         }
 

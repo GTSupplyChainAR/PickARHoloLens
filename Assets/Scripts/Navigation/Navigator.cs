@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using PickAR.Managers;
 using PickAR.UI;
 
 namespace PickAR.Navigation {
@@ -13,10 +14,6 @@ namespace PickAR.Navigation {
         [HideInInspector]
         public Waypoint[] waypoints;
 
-        /// <summary> The line renderer prefab to make lines with. </summary>
-        [Tooltip("The line renderer prefab to make lines with.")]
-        public PathLine lineRenderer;
-
         /// <summary> Whether to check if all edges are two-way. </summary>
         [SerializeField]
         [Tooltip("Whether to check if all edges are two-way.")]
@@ -25,8 +22,8 @@ namespace PickAR.Navigation {
         /// <summary> The next waypoint in the shortest path between the first and second waypoints. </summary>
         private Waypoint[,] next;
 
-        /// <summary> Parent object for all path lines. </summary>
-        private GameObject pathLines;
+        /// <summary> The object pool to get path line objects from. </summary>
+        private PathLinePool pathLinePool;
 
         /// <summary> The singleton instance of the object. </summary>
         public static Navigator instance {
@@ -39,10 +36,9 @@ namespace PickAR.Navigation {
         /// </summary>
         private void Awake() {
             instance = this;
+            pathLinePool = GetComponent<PathLinePool>();
 
             waypoints = FindObjectsOfType<Waypoint>();
-            pathLines = new GameObject();
-            pathLines.name = "Path Lines";
 
             if (checkTwoWay) {
                 foreach (Waypoint waypoint in waypoints) {
@@ -127,14 +123,17 @@ namespace PickAR.Navigation {
         /// <param name="start">The starting point of the path.</param>
         /// <param name="end">The ending point of the path.</param>
         public void DrawShortestPath(Vector3 start, Vector3 end) {
-            RemoveLines();
             Waypoint startPoint = GetClosestWaypoint(start);
             Waypoint endPoint = GetClosestWaypoint(end);
-            DrawLine(start, startPoint.transform.position);
+            pathLinePool.ResetFreeIndex();
             if (startPoint != endPoint) {
+                pathLinePool.DrawLine(start, startPoint.transform.position);
                 DrawShortestPath(startPoint, endPoint);
+                pathLinePool.DrawLine(endPoint.transform.position, end);
+            } else {
+                pathLinePool.DrawLine(start, end);
             }
-            DrawLine(endPoint.transform.position, end);
+            pathLinePool.RemoveExtraLines();
         }
 
         /// <summary>
@@ -157,23 +156,35 @@ namespace PickAR.Navigation {
         }
 
         /// <summary>
+        /// Finds the shortest path between two points.
+        /// </summary>
+        /// <returns>The shortest path between two points, or an empty list if there isn't a path.</returns>
+        /// <param name="start">The starting point of the path.</param>
+        /// <param name="end">The ending point of the path.</param>
+        public float GetPathDistance(Vector3 start, Vector3 end) {
+            Waypoint startPoint = GetClosestWaypoint(start);
+            Waypoint endPoint = GetClosestWaypoint(end);
+            float distance = 0;
+            if (startPoint == endPoint) {
+                distance = Vector3.Distance(start, end);
+            } else {
+                List<Waypoint> shortestPath = GetShortestPath(startPoint, endPoint);
+                for (int i = 0; i < shortestPath.Count - 1; i++) {
+                    distance += Waypoint.GetDistance(shortestPath[i], shortestPath[i + 1]);
+                }
+                distance += startPoint.GetDistance(start);
+                distance += endPoint.GetDistance(end);
+            }
+            return distance;
+        }
+
+        /// <summary>
         /// Draws a line between two waypoints.
         /// </summary>
         /// <param name="start">The starting waypoint of the line.</param>
         /// <param name="end">The ending waypoint of the line.</param>
         private void DrawLine(Waypoint start, Waypoint end) {
-            DrawLine(start.transform.position, end.transform.position);
-        }
-
-        /// <summary>
-        /// Draws a line between two points.
-        /// </summary>
-        /// <param name="start">The starting points of the line.</param>
-        /// <param name="end">The ending points of the line.</param>
-        private void DrawLine(Vector3 start, Vector3 end) {
-            PathLine line = Instantiate(lineRenderer) as PathLine;
-            line.SetEndpoints(start, end);
-            line.transform.parent = pathLines.transform;
+            pathLinePool.DrawLine(start.transform.position, end.transform.position);
         }
 
         /// <summary>
@@ -199,9 +210,7 @@ namespace PickAR.Navigation {
         /// Removes all drawn lines.
         /// </summary>
         public void RemoveLines() {
-            foreach (Transform child in pathLines.transform) {
-                Destroy(child.gameObject);
-            }
+            pathLinePool.RemoveLines();
         }
     }
 }
