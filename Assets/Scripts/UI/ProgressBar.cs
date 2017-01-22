@@ -30,7 +30,7 @@ namespace PickAR.UI {
         private void Update() {
             Vector2 newAnchor = rectTransform.anchorMax;
             float anchorMinX = rectTransform.anchorMin.x;
-            newAnchor.x = anchorMaxX - 2 * anchorMinX * (1 - JobManager.instance.progressFraction);
+            newAnchor.x = anchorMinX + (anchorMaxX - anchorMinX) * JobManager.instance.progressFraction;
             rectTransform.anchorMax = newAnchor;
         }
     }
