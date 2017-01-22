@@ -15,8 +15,6 @@ namespace PickAR.Managers {
         private int totalItems;
         /// <summary> The item to pick up next. </summary>
         private Item currentItem;
-        /// <summary> The point that the application is currently leading the user towards. </summary>
-        private Vector3 currentPoint;
         /// <summary> The object used to highlight the current object. </summary>
         [SerializeField]
         [Tooltip("The object used to highlight the current object.")]
@@ -42,7 +40,7 @@ namespace PickAR.Managers {
         }
         /// <summary> The aisle number of the current item. </summary>
         public string itemAisle {
-            get { return currentItem.aisleNumber; }
+            get { return currentItem == null ? "" : currentItem.aisleNumber; }
         }
         /// <summary> Whether the user has finished the job and is heading back to the start point. </summary>
         public bool jobFinished {
@@ -166,7 +164,6 @@ namespace PickAR.Managers {
         /// </summary>
         /// <param name="point">The current point that the user is headed towards..</param>
         private void SetCurrentPoint(Vector3 point) {
-            currentPoint = point;
             itemHighlight.transform.position = point;
             Navigator.instance.DrawShortestPath(user.transform.position, point);
         }

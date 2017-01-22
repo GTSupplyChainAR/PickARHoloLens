@@ -7,9 +7,7 @@ namespace PickAR.UI {
     /// Displays the user's progress through the job.
     /// </summary>
     class ProgressBar : MonoBehaviour {
-
-        /// <summary> The width of the progress bar at full progress. </summary>
-        private float startWidth;
+        
         /// <summary> The right anchor of the progress bar at full progress. </summary>
         private float anchorMaxX;
         /// <summary> The progress bar transform. </summary>
@@ -20,7 +18,6 @@ namespace PickAR.UI {
         /// </summary>
         private void Start() {
             rectTransform = GetComponent<RectTransform>();
-            startWidth = rectTransform.sizeDelta.x;
             anchorMaxX = rectTransform.anchorMax.x;
         }
 
