@@ -25,6 +25,12 @@ namespace PickAR.Navigation {
         /// <summary> The object pool to get path line objects from. </summary>
         private PathLinePool pathLinePool;
 
+        /// <summary> The next point that the user has to go to in the path. </summary>
+        public Vector3 nextPoint {
+            get;
+            private set;
+        }
+
         /// <summary> The singleton instance of the object. </summary>
         public static Navigator instance {
             get;
@@ -128,10 +134,25 @@ namespace PickAR.Navigation {
             pathLinePool.ResetFreeIndex();
             if (startPoint != endPoint) {
                 pathLinePool.DrawLine(start, startPoint.transform.position);
-                DrawShortestPath(startPoint, endPoint);
+                List<Waypoint> waypoints = DrawShortestPath(startPoint, endPoint);
                 pathLinePool.DrawLine(endPoint.transform.position, end);
+                nextPoint = startPoint.transform.position;
+                Vector3 firstDirection = startPoint.transform.position - start;
+                firstDirection.y = 0;
+                firstDirection.Normalize();
+                if (firstDirection != Vector3.zero) {
+                    Vector3 secondDirection = waypoints[1].transform.position - startPoint.transform.position;
+                    secondDirection.y = 0;
+                    secondDirection.Normalize();
+                    if (Vector3.Angle(firstDirection, secondDirection) > 115) {
+                        nextPoint = waypoints[1].transform.position;
+                    }
+
+                }
+
             } else {
                 pathLinePool.DrawLine(start, end);
+                nextPoint = end;
             }
             pathLinePool.RemoveExtraLines();
         }
