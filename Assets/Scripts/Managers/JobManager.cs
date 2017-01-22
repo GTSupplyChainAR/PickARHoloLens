@@ -117,7 +117,7 @@ namespace PickAR.Managers {
                     return;
                 }
             }
-            Debug.Log("Wrong item!");
+            SoundManager.instance.PlaySound(SoundManager.Sound.Incorrect);
         }
 
         /// <summary>
@@ -127,8 +127,10 @@ namespace PickAR.Managers {
         public void RemoveItem(Item item) {
             targetItems.Remove(item);
             if (targetItems.Count == 0) {
+                SoundManager.instance.PlaySound(SoundManager.Sound.CollectAll);
                 progressFraction = 1;
             } else {
+                SoundManager.instance.PlaySound(SoundManager.Sound.Correct);
                 progressFraction = (totalItems - remainingItems) / (float) totalItems;
             }
         }
@@ -139,6 +141,7 @@ namespace PickAR.Managers {
         public void CompleteJob() {
             SetJobActive(false);
             Navigator.instance.RemoveLines();
+            SoundManager.instance.PlaySound(SoundManager.Sound.Finish);
         }
 
         /// <summary>
