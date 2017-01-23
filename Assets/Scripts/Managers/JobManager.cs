@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Collections;
 using System.Collections.Generic;
 using PickAR.Navigation;
 using PickAR.Objects;
@@ -75,6 +76,10 @@ namespace PickAR.Managers {
         private void Start() {
             targetItems = new List<Item>();
             progressFraction = 1;
+            StartDefaultJob();
+        }
+
+        private void StartDefaultJob() {
             CreateJob(targetArray);
         }
 
@@ -142,6 +147,15 @@ namespace PickAR.Managers {
             SetJobActive(false);
             Navigator.instance.RemoveLines();
             SoundManager.instance.PlaySound(SoundManager.Sound.Finish);
+            StartCoroutine(RestartJob());
+        }
+
+        /// <summary>
+        /// Restarts the default job.
+        /// </summary>
+        private IEnumerator RestartJob() {
+            yield return new WaitForSeconds(5);
+            StartDefaultJob();
         }
 
         /// <summary>
