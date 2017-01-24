@@ -104,6 +104,7 @@ namespace PickAR.Managers {
             targetItems.Clear();
             foreach (Item item in targetArray) {
                 targetItems.Add(item);
+                item.GetComponent<Renderer>().enabled = true;
             }
             totalItems = targetArray.Length;
             startPoint = user.transform.position;
@@ -131,6 +132,7 @@ namespace PickAR.Managers {
         /// <param name="item">The item that was collected.</param>
         public void RemoveItem(Item item) {
             targetItems.Remove(item);
+            item.GetComponent<Renderer>().enabled = false;
             if (targetItems.Count == 0) {
                 SoundManager.instance.PlaySound(SoundManager.Sound.CollectAll);
                 progressFraction = 1;
