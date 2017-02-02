@@ -11,11 +11,17 @@ namespace PickAR.Managers {
     public class JobManager : MonoBehaviour {
         
         /// <summary> The items targeted by the user. </summary>
-        private List<Item> targetItems;
+        public List<Item> targetItems {
+            get;
+            private set;
+        }
         /// <summary> The total number of items in the job. </summary>
         private int totalItems;
         /// <summary> The item to pick up next. </summary>
-        private Item currentItem;
+        public Item currentItem {
+            get;
+            private set;
+        }
         /// <summary> The object used to highlight the current object. </summary>
         [SerializeField]
         [Tooltip("The object used to highlight the current object.")]
@@ -43,6 +49,10 @@ namespace PickAR.Managers {
         public string itemAisle {
             get { return currentItem == null ? "" : currentItem.aisleNumber; }
         }
+        /// <summary> The aisle entry of the current item. </summary>
+        public AisleEntry itemAisleEntry {
+            get { return currentItem == null ? null : currentItem.aisleEntry; }
+        }
         /// <summary> Whether the user has finished the job and is heading back to the start point. </summary>
         public bool jobFinished {
             get { return jobActive && remainingItems == 0; }
@@ -51,6 +61,8 @@ namespace PickAR.Managers {
         public int remainingItems {
             get { return targetItems.Count; }
         }
+        /// <summary> Whether to refresh the items that needed for the job. </summary>
+        public bool refreshItems;
 
         /// <summary> Debug items to be targeted by the user. </summary>
         [SerializeField]
@@ -79,6 +91,9 @@ namespace PickAR.Managers {
             StartDefaultJob();
         }
 
+        /// <summary>
+        /// Starts the hard-coded, default job.
+        /// </summary>
         private void StartDefaultJob() {
             CreateJob(targetArray);
         }
@@ -133,9 +148,11 @@ namespace PickAR.Managers {
         public void RemoveItem(Item item) {
             targetItems.Remove(item);
             item.GetComponent<Renderer>().enabled = false;
+            refreshItems = true;
             if (targetItems.Count == 0) {
                 SoundManager.instance.PlaySound(SoundManager.Sound.CollectAll);
                 progressFraction = 1;
+                currentItem = null;
             } else {
                 SoundManager.instance.PlaySound(SoundManager.Sound.Correct);
                 progressFraction = (totalItems - remainingItems) / (float) totalItems;

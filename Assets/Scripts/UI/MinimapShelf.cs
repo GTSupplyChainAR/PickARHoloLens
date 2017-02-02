@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 
 namespace PickAR.UI {
 
@@ -6,19 +7,22 @@ namespace PickAR.UI {
     /// A shelf icon in the minimap.
     /// </summary>
     class MinimapShelf : MonoBehaviour {
-
-        /// <summary>
-        /// Initializes the object.
-        /// </summary>
-        private void Start() {
-            
+        
+        /// <summary> The ID of the shelf. </summary>
+        [SerializeField]
+        [Tooltip("The ID of the shelf.")]
+        private string ShelfID;
+        /// <summary> The ID of the shelf. </summary>
+        internal string shelfID {
+            get { return ShelfID; }
         }
 
         /// <summary>
-        /// Updates the object.
+        /// Sets the color of the shelf icon.
         /// </summary>
-        private void Update() {
-            
+        /// <param name="color">The color of the shelf icon.</param>
+        internal void SetShelfColor(Color color) {
+            GetComponent<Image>().color = color;
         }
     }
 }
