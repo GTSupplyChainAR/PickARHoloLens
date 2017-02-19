@@ -11,13 +11,7 @@ namespace PickAR.Navigation {
     public class Navigator : MonoBehaviour {
 
         /// <summary> All waypoints in the area. </summary>
-        [HideInInspector]
-        public Waypoint[] waypoints;
-
-        /// <summary> Whether to load waypoints from a file. </summary>
-        [SerializeField]
-        [Tooltip("Whether to load waypoints from a file.")]
-        private bool useWaypointFile;
+        public List<Waypoint> waypoints;
 
         /// <summary> The next waypoint in the shortest path between the first and second waypoints. </summary>
         private Waypoint[,] next;
@@ -50,25 +44,27 @@ namespace PickAR.Navigation {
         private void Start() {
             pathRenderer = GetComponent<PathRenderer>();
 
-            if (useWaypointFile) {
-                waypoints = WaypointStorage.instance.LoadWaypoints();
-            } else {
-                waypoints = FindObjectsOfType<Waypoint>();
+            waypoints = WaypointStorage.instance.LoadWaypoints();
 
-                int indexCounter = 0;
-                foreach (Waypoint waypoint in waypoints) {
-                    waypoint.index = indexCounter++;
-                }
+            FindShortestPaths();
+        }
+
+        /// <summary>
+        /// Resets the indices of all waypoints to be sequential.
+        /// </summary>
+        public void ReindexWaypoints() {
+            for (int i = 0; i < waypoints.Count; i++) {
+                Waypoint waypoint = waypoints[i];
+                waypoint.index = i;
+                waypoint.name = "Waypoint " + i.ToString();
             }
-
-            findShortestPaths();
         }
 
         /// <summary>
         /// Finds all-pair shortest paths between waypoints.
         /// </summary>
-        private void findShortestPaths() {
-            int numWaypoints = waypoints.Length;
+        public void FindShortestPaths() {
+            int numWaypoints = waypoints.Count;
 
             // Floyd-Warshall.
             float[,] dist = new float[numWaypoints, numWaypoints];
@@ -83,7 +79,6 @@ namespace PickAR.Navigation {
                 foreach (Waypoint other in waypoint.adjacent) {
                     dist[waypoint.index, other.index] = GetDistance(waypoint, other);
                 }
-                waypoint.gameObject.SetActive(false);
             }
 
             for (int k = 0; k < numWaypoints; k++) {

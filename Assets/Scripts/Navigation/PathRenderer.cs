@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using PickAR.UI;
 
-namespace PickAR.Managers {
+namespace PickAR.Navigation {
 
     /// <summary>
     /// Renders the path to the goal.

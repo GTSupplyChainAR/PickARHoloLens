@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.Serialization;
 using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace PickAR.Navigation {
@@ -14,10 +15,35 @@ namespace PickAR.Navigation {
         [SerializeField]
         [Tooltip("The file to store waypoints in.")]
         private string storageFile;
+        [Header("Prefabs")]
         /// <summary> The waypoint prefab to instantiate. </summary>
         [SerializeField]
         [Tooltip("The waypoint prefab to instantiate.")]
-        private Waypoint waypointPrefab;
+        private Waypoint _waypointPrefab;
+        /// <summary> The waypoint prefab to instantiate. </summary>
+        public Waypoint waypointPrefab {
+            get { return _waypointPrefab; }
+        }
+        /// <summary> The waypoint connector prefab to instantiate from. </summary>
+        [SerializeField]
+        [Tooltip("The waypoint connector prefab to instantiate from.")]
+        private WaypointConnector _waypointConnectorPrefab;
+        /// <summary> The waypoint connector prefab to instantiate from. </summary>
+        internal WaypointConnector waypointConnectorPrefab {
+            get { return _waypointConnectorPrefab; }
+        }
+
+        /// <summary> The parent object of waypoint objects. </summary>
+        public GameObject waypointParent {
+            get;
+            private set;
+        }
+
+        /// <summary> The parent object of connector objects. </summary>
+        public GameObject connectorParent {
+            get;
+            private set;
+        }
 
         /// <summary> The singleton instance of the object. </summary>
         public static WaypointStorage instance {
@@ -36,7 +62,7 @@ namespace PickAR.Navigation {
         /// Stores waypoint data in a file.
         /// </summary>
         /// <param name="waypoints">The waypoints to store.</param>
-        public void StoreWaypoints(Waypoint[] waypoints) {
+        public void StoreWaypoints(List<Waypoint> waypoints) {
             WaypointContainer container = new WaypointContainer(waypoints);
             string json = JsonUtility.ToJson(container);
             Debug.Log(json);
@@ -46,21 +72,27 @@ namespace PickAR.Navigation {
         /// <summary>
         /// Loads waypoint data from a file.
         /// </summary>
-        public Waypoint[] LoadWaypoints() {
+        public List<Waypoint> LoadWaypoints() {
             string json;
+            // Read from the file.
             if (File.Exists(storageFile)) {
                 json = File.ReadAllText(storageFile);
             } else {
                 Debug.Log("No waypoint data found.");
-                return new Waypoint[0];
+                return new List<Waypoint>();
             }
             WaypointContainer container = JsonUtility.FromJson<WaypointContainer>(json);
             int numWaypoints = container.waypoints.Length;
-            Waypoint[] waypoints = new Waypoint[numWaypoints];
-            int i;
-            GameObject waypointParent = new GameObject();
+            List<Waypoint> waypoints = new List<Waypoint>();
+            waypointParent = new GameObject();
             waypointParent.name = "Waypoints";
-            for (i = 0; i < numWaypoints; i++) {
+            waypointParent.SetActive(false);
+
+            connectorParent = new GameObject();
+            connectorParent.transform.parent = waypointParent.transform;
+
+            // Load waypoints from the file.
+            for (int i = 0; i < numWaypoints; i++) {
                 Waypoint waypoint = GameObject.Instantiate(waypointPrefab);
                 WaypointData data = container.waypoints[i];
                 waypoint.index = data.index;
@@ -68,17 +100,29 @@ namespace PickAR.Navigation {
                 waypoint.name = "Waypoint " + waypoint.index.ToString();
                 waypoint.transform.parent = waypointParent.transform;
 
-                waypoints[i] = waypoint;
+                waypoints.Add(waypoint);
             }
 
-            int j;
-            for (i = 0; i < numWaypoints; i++) {
+            // Load adjacencies from the file.
+            for (int i = 0; i < numWaypoints; i++) {
                 Waypoint waypoint = waypoints[i];
                 WaypointData data = container.waypoints[i];
                 int numAdjacent = data.adjacent.Length;
-                waypoint.adjacent = new Waypoint[numAdjacent];
-                for (j = 0; j < numAdjacent; j++) {
-                    waypoint.adjacent[j] = waypoints[data.adjacent[j]];
+                waypoint.adjacent = new List<Waypoint>();
+                for (int j = 0; j < numAdjacent; j++) {
+                    Waypoint other = waypoints[data.adjacent[j]];
+                    waypoint.adjacent.Add(other);
+                    WaypointConnector line;
+                    if (waypoint.index < other.index) {
+                        // Create a line between the two waypoints.
+                        line = GameObject.Instantiate(waypointConnectorPrefab);
+                        line.name = "Waypoint Connector";
+                        line.transform.parent = connectorParent.transform;
+                        line.SetWaypoints(waypoint, other);
+                    } else {
+                        line = other.GetConnectorLink(waypoint);
+                    }
+                    waypoint.connectors.Add(line);
                 }
             }
 
@@ -98,10 +142,9 @@ namespace PickAR.Navigation {
         /// Initializes a waypoint container
         /// </summary>
         /// <param name="waypointObjects">Waypoints in the network.</param>
-        internal WaypointContainer(Waypoint[] waypointObjects) {
-            int numWaypoints = waypointObjects.Length;
+        internal WaypointContainer(List<Waypoint> waypointObjects) {
+            int numWaypoints = waypointObjects.Count;
             waypoints = new WaypointData[numWaypoints];
-            Debug.Log(numWaypoints);
             for (int i = 0; i < numWaypoints; i++) {
                 waypoints[i] = new WaypointData(waypointObjects[i]);
             }
@@ -135,7 +178,7 @@ namespace PickAR.Navigation {
         internal WaypointData(Waypoint waypoint) {
             position = waypoint.transform.position;
             index = waypoint.index;
-            int numAdjacent = waypoint.adjacent.Length;
+            int numAdjacent = waypoint.adjacent.Count;
             adjacent = new int[numAdjacent];
             for (int i = 0; i < numAdjacent; i++) {
                 adjacent[i] = waypoint.adjacent[i].index;
