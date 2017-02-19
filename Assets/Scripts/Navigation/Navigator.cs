@@ -14,16 +14,16 @@ namespace PickAR.Navigation {
         [HideInInspector]
         public Waypoint[] waypoints;
 
-        /// <summary> Whether to check if all edges are two-way. </summary>
+        /// <summary> Whether to load waypoints from a file. </summary>
         [SerializeField]
-        [Tooltip("Whether to check if all edges are two-way.")]
-        private bool checkTwoWay;
+        [Tooltip("Whether to load waypoints from a file.")]
+        private bool useWaypointFile;
 
         /// <summary> The next waypoint in the shortest path between the first and second waypoints. </summary>
         private Waypoint[,] next;
 
         /// <summary> The object pool to get path line objects from. </summary>
-        private PathLinePool pathLinePool;
+        private PathRenderer pathRenderer;
 
         /// <summary> The next point that the user has to go to in the path. </summary>
         public Vector3 nextPoint {
@@ -38,37 +38,37 @@ namespace PickAR.Navigation {
         }
 
         /// <summary>
-        /// Initializes the object.
+        /// Initializes the singleton instance of the object.
         /// </summary>
         private void Awake() {
             instance = this;
-            pathLinePool = GetComponent<PathLinePool>();
+        }
 
-            waypoints = FindObjectsOfType<Waypoint>();
+        /// <summary>
+        /// Initializes the object.
+        /// </summary>
+        private void Start() {
+            pathRenderer = GetComponent<PathRenderer>();
 
-            if (checkTwoWay) {
+            if (useWaypointFile) {
+                waypoints = WaypointStorage.instance.LoadWaypoints();
+            } else {
+                waypoints = FindObjectsOfType<Waypoint>();
+
+                int indexCounter = 0;
                 foreach (Waypoint waypoint in waypoints) {
-                    foreach (Waypoint other in waypoint.adjacent) {
-                        bool twoWay = false;
-                        foreach (Waypoint check in other.adjacent) {
-                            if (check == waypoint) {
-                                twoWay = true;
-                            }
-                        }
-                        if (twoWay) {
-                            DrawLine(waypoint, other);
-                        } else {
-                            Debug.Log("Missing edge between " + other.name + " and " + waypoint.name + ".");
-                        }
-                    }
+                    waypoint.index = indexCounter++;
                 }
             }
 
+            findShortestPaths();
+        }
+
+        /// <summary>
+        /// Finds all-pair shortest paths between waypoints.
+        /// </summary>
+        private void findShortestPaths() {
             int numWaypoints = waypoints.Length;
-            int indexCounter = 0;
-            foreach (Waypoint waypoint in waypoints) {
-                waypoint.index = indexCounter++;
-            }
 
             // Floyd-Warshall.
             float[,] dist = new float[numWaypoints, numWaypoints];
@@ -114,28 +114,18 @@ namespace PickAR.Navigation {
         /// <returns>The shortest path between two points, or an empty list if there isn't a path.</returns>
         /// <param name="start">The starting point of the path.</param>
         /// <param name="end">The ending point of the path.</param>
-        public List<Waypoint> DrawShortestPath(Waypoint start, Waypoint end) {
-            List<Waypoint> path = GetShortestPath(start, end);
-            for (int i = 0; i < path.Count - 1; i++) {
-                DrawLine(path[i], path[i + 1]);
-            }
-            return path;
-        }
-
-        /// <summary>
-        /// Draws the shortest path between two points
-        /// </summary>
-        /// <returns>The shortest path between two points, or an empty list if there isn't a path.</returns>
-        /// <param name="start">The starting point of the path.</param>
-        /// <param name="end">The ending point of the path.</param>
         public void DrawShortestPath(Vector3 start, Vector3 end) {
             Waypoint startPoint = GetClosestWaypoint(start);
             Waypoint endPoint = GetClosestWaypoint(end);
-            pathLinePool.ResetFreeIndex();
             if (startPoint != endPoint) {
-                pathLinePool.DrawLine(start, startPoint.transform.position);
-                List<Waypoint> waypoints = DrawShortestPath(startPoint, endPoint);
-                pathLinePool.DrawLine(endPoint.transform.position, end);
+                List<Waypoint> pathWaypoints = GetShortestPath(startPoint, endPoint);
+                List<Vector3> path = new List<Vector3>();
+                path.Add(start);
+                foreach (Waypoint waypoint in pathWaypoints) {
+                    path.Add(waypoint.transform.position);
+                }
+                path.Add(end);
+                pathRenderer.DrawPath(path);
                 nextPoint = startPoint.transform.position;
                 Vector3 firstDirection = startPoint.transform.position - start;
                 firstDirection.y = 0;
@@ -151,10 +141,12 @@ namespace PickAR.Navigation {
                 }
 
             } else {
-                pathLinePool.DrawLine(start, end);
+                List<Vector3> path = new List<Vector3>();
+                path.Add(start);
+                path.Add(end);
+                pathRenderer.DrawPath(path);
                 nextPoint = end;
             }
-            pathLinePool.RemoveExtraLines();
         }
 
         /// <summary>
@@ -200,15 +192,6 @@ namespace PickAR.Navigation {
         }
 
         /// <summary>
-        /// Draws a line between two waypoints.
-        /// </summary>
-        /// <param name="start">The starting waypoint of the line.</param>
-        /// <param name="end">The ending waypoint of the line.</param>
-        private void DrawLine(Waypoint start, Waypoint end) {
-            pathLinePool.DrawLine(start.transform.position, end.transform.position);
-        }
-
-        /// <summary>
         /// Gets the closest waypoint to a position.
         /// </summary>
         /// <returns>The closest waypoint to the position.</returns>
@@ -231,7 +214,7 @@ namespace PickAR.Navigation {
         /// Removes all drawn lines.
         /// </summary>
         public void RemoveLines() {
-            pathLinePool.RemoveLines();
+            pathRenderer.RemoveLines();
         }
     }
 }
