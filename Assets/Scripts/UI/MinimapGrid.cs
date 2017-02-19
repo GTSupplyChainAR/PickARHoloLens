@@ -99,6 +99,7 @@ namespace PickAR.UI {
             rectTransform.sizeDelta = new Vector2(width, height);
             rectTransform.localPosition = new Vector3(x + width / 2, y + height / 2, 0);
             rectTransform.localScale = Vector3.one;
+            rectTransform.localRotation = Quaternion.identity;
             rectTransform.GetComponent<Image>().color = Color.black;
             return imageObject;
         }
