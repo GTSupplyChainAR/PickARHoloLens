@@ -32,3 +32,4 @@ sysinfo.txt
 *.DS_Store
 
 App/*
+Waypoints.json

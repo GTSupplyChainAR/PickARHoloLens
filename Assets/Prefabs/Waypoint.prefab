@@ -22,7 +22,8 @@ GameObject:
   - component: {fileID: 33002583586801084}
   - component: {fileID: 23289970492407440}
   - component: {fileID: 114786946229212888}
-  m_Layer: 0
+  - component: {fileID: 135045029831831472}
+  m_Layer: 8
   m_Name: Waypoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -55,7 +56,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 2b39bee8cd4b2496c98ab0cd00e31359, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -93,3 +94,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   adjacent: []
   index: 0
+--- !u!135 &135045029831831472
+SphereCollider:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1925822953916624}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.5
+  m_Center: {x: 0, y: 0, z: 0}

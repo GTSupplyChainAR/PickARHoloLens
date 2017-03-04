@@ -4,29 +4,59 @@ using System.Collections.Generic;
 
 public class SpriteSheet : MonoBehaviour
 {
-    public int _columns = 2;                        // The number of columns of the texture
-    public int _rows = 2;                           // The number of rows of the texture
-    public Vector2 _scale = new Vector3(1f, 1f);    // Scale the texture. This must be a non-zero number. negative scale flips the image
-    public Vector2 _offset = Vector2.zero;          // You can use this if you do not want the texture centered. (These are very small numbers .001)
-    public Vector2 _buffer = Vector2.zero;          // You can use this to buffer frames to hide unwanted grid lines or artifacts
-    public float _framesPerSecond = 10f;            // Frames per second that you want to texture to play at
-    public bool _playOnce = false;                  // Enable this if you want the animation to only play one time
-    public bool _disableUponCompletion = false;     // Enable this if you want the texture to disable the renderer when it is finished playing
-    public bool _enableEvents = false;              // Enable this if you want to register an event that fires when the animation is finished playing
-    public bool _playOnEnable = true;               // The animation will play when the object is enabled
-    public bool _newMaterialInstance = false;       // Set this to true if you want to create a new material instance
+    /// <summary> The number of columns of the texture </summary>
+    [Tooltip("The number of columns of the texture")]
+    public int _columns = 2;
+    /// <summary> The number of rows of the texture </summary>
+    [Tooltip("The number of rows of the texture")]
+    public int _rows = 2;
+    /// <summary> Scale the texture. This must be a non-zero number. negative scale flips the image </summary>
+    [Tooltip("Scale the texture. This must be a non-zero number. negative scale flips the image")]
+    public Vector2 _scale = new Vector3(1f, 1f);
+    /// <summary> You can use this if you do not want the texture centered. (These are very small numbers .001) </summary>
+    [Tooltip("You can use this if you do not want the texture centered. (These are very small numbers .001)")]
+    public Vector2 _offset = Vector2.zero;
+    /// <summary> You can use this to buffer frames to hide unwanted grid lines or artifacts </summary>
+    [Tooltip("You can use this to buffer frames to hide unwanted grid lines or artifacts")]
+    public Vector2 _buffer = Vector2.zero;
+    /// <summary> Frames per second that you want to texture to play at </summary>
+    [Tooltip("Frames per second that you want to texture to play at")]
+    public float _framesPerSecond = 10f;
+    /// <summary> Enable this if you want the animation to only play one time </summary>
+    [Tooltip("Enable this if you want the animation to only play one time")]
+    public bool _playOnce = false;
+    /// <summary> Enable this if you want the texture to disable the renderer when it is finished playing </summary>
+    [Tooltip("Enable this if you want the texture to disable the renderer when it is finished playing")]
+    public bool _disableUponCompletion = false;
+    /// <summary> Enable this if you want to register an event that fires when the animation is finished playing </summary>
+    [Tooltip("Enable this if you want to register an event that fires when the animation is finished playing")]
+    public bool _enableEvents = false;
+    /// <summary> The animation will play when the object is enabled </summary>
+    [Tooltip("The animation will play when the object is enabled")]
+    public bool _playOnEnable = true;
+    /// <summary> Set this to true if you want to create a new material instance </summary>
+    [Tooltip("Set this to true if you want to create a new material instance")]
+    public bool _newMaterialInstance = false;
 
-    private int _index = 0;                         // Keeps track of the current frame 
-    private Vector2 _textureSize = Vector2.zero;    // Keeps track of the texture scale 
-    private Material _materialInstance = null;      // Material instance of the material we create (if needed)
-    private bool _hasMaterialInstance = false;      // A flag so we know if we have a material instance we need to clean up (better than a null check i think)
-    private bool _isPlaying = false;                // A flag to determine if the animation is currently playing
+    /// <summary> Keeps track of the current frame </summary>
+    private int _index = 0;
+    /// <summary> Keeps track of the texture scale  </summary>
+    private Vector2 _textureSize = Vector2.zero;
+    /// <summary> Material instance of the material we create (if needed) </summary>
+    private Material _materialInstance = null;
+    /// <summary> A flag so we know if we have a material instance we need to clean up (better than a null check i think) </summary>
+    private bool _hasMaterialInstance = false;
+    /// <summary> A flag to determine if the animation is currently playing </summary>
+    private bool _isPlaying = false;
 
+    /// <summary> The Event delegate </summary>
+    public delegate void VoidEvent();
+    /// <summary> A list of functions we need to call if events are enabled </summary>
+    private List<VoidEvent> _voidEventCallbackList;
 
-    public delegate void VoidEvent();               // The Event delegate
-    private List<VoidEvent> _voidEventCallbackList; // A list of functions we need to call if events are enabled
-
-    // Use this function to register your callback function with this script
+    /// <summary>
+    /// Use this function to register your callback function with this script
+    /// </summary>
     public void RegisterCallback(VoidEvent cbFunction)
     {
         // If events are enabled, add the callback function to the event list
@@ -36,7 +66,9 @@ public class SpriteSheet : MonoBehaviour
             Debug.LogWarning("AnimateTiledTexture: You are attempting to register a callback but the events of this object are not enabled!");
     }
 
-    // Use this function to unregister a callback function with this script
+    /// <summary>
+    /// Use this function to unregister a callback function with this script
+    /// </summary>
     public void UnRegisterCallback(VoidEvent cbFunction)
     {
         // If events are enabled, unregister the callback function from the event list
@@ -141,7 +173,9 @@ public class SpriteSheet : MonoBehaviour
         GetComponent<Renderer>().sharedMaterial.SetTextureScale("_MainTex", _textureSize);
     }
 
-    // The main update function of this script
+    /// <summary>
+    /// The main update function of this script
+    /// </summary>
     private IEnumerator updateTiling()
     {
         _isPlaying = true;
