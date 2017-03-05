@@ -1,12 +1,13 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using PlayerController;
+using PickAR.Managers;
 
 namespace PickAR.Navigation {
     /// <summary>
     /// A junction point in the graph of the area.
     /// </summary>
-    public class Waypoint : MonoBehaviour, Selectable {
+	public class Waypoint : MonoBehaviour, Selectable {
 
         /// <summary> The waypoints adjacent to this point. </summary>
         [Tooltip("The waypoints adjacent to this point.")]
@@ -52,10 +53,12 @@ namespace PickAR.Navigation {
             return null;
         }
 
-        /// <summary> Triggers when the object is selected. </summary>
-        public void OnSelect() {
-            WaypointCreator.instance.SelectWaypoint(this);
-        }
+		/// <summary>
+		/// Triggers when the object is selected.
+		/// </summary>
+		public void OnSelect() {
+			WaypointCreator.instance.SelectWaypoint(this);
+		}
 
         /// <summary>
         /// Deletes the waypoint.

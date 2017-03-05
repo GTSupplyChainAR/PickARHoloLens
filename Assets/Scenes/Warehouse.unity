@@ -37,7 +37,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657743, g: 0.49641502, b: 0.5748179, a: 1}
+  m_IndirectSpecularColor: {r: 0.4465776, g: 0.49641502, b: 0.5748182, a: 1}
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
@@ -2363,7 +2363,8 @@ Prefab:
       propertyPath: maxPitch
       value: 75
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 114640195965799736, guid: 69762ec5931aa499aa8f41620a18471a, type: 2}
   m_ParentPrefab: {fileID: 100100000, guid: 69762ec5931aa499aa8f41620a18471a, type: 2}
   m_IsPrefabParent: 0
 --- !u!1 &1147534439 stripped
@@ -2371,24 +2372,6 @@ GameObject:
   m_PrefabParentObject: {fileID: 1976691294778884, guid: 69762ec5931aa499aa8f41620a18471a,
     type: 2}
   m_PrefabInternal: {fileID: 1147534438}
---- !u!114 &1147534440
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1147534439}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f1e61ebba57244d2da2394bae1693194, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  createDistance: 1
-  selectedConnectorPrefab: {fileID: 120118862041228334, guid: 6f0d190b0b0784afdb0e0258a83a3eea,
-    type: 2}
-  unselectedMaterial: {fileID: 2100000, guid: 2b39bee8cd4b2496c98ab0cd00e31359, type: 2}
-  hoverMaterial: {fileID: 2100000, guid: 608e2da486f654f8fb1488568e877d2e, type: 2}
-  selectedMaterial: {fileID: 2100000, guid: e8e5ff8d2008f4645abbf3c026fceaaf, type: 2}
-  dragMaterial: {fileID: 2100000, guid: 82e52b671772e45158733ec40dfc0038, type: 2}
 --- !u!1 &1150664932 stripped
 GameObject:
   m_PrefabParentObject: {fileID: 1838721588663822, guid: 67409089fb242514aac8e4a2b7e47571,
@@ -3216,7 +3199,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7947c800398224c3396854b6eab845c0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _inputType: 0
+  _inputType: 1
   desktopObjects:
   - {fileID: 1147534439}
   - {fileID: 295664321}
@@ -3265,7 +3248,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 00216c7bcaee949eda982d5b183fcc51, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  storageFile: Waypoints.json
+  _defaultFile: Waypoints.json
+  loadDefaultFile: 0
   _waypointPrefab: {fileID: 114786946229212888, guid: 94e43ef6507134f23a9c5717cd232f64,
     type: 2}
   _waypointConnectorPrefab: {fileID: 114944998591143044, guid: 8462a1d41a55c4d0a96c819ee99c2e88,
@@ -4726,6 +4710,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2043259199}
   - component: {fileID: 2043259200}
+  - component: {fileID: 2043259201}
   m_Layer: 0
   m_Name: User
   m_TagString: Untagged
@@ -4759,6 +4744,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   endDistance: 2
   angleIgnoreDistance: 0.5
+--- !u!114 &2043259201
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 2043259198}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1e61ebba57244d2da2394bae1693194, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  createDistance: 1
+  selectedConnectorPrefab: {fileID: 120118862041228334, guid: 6f0d190b0b0784afdb0e0258a83a3eea,
+    type: 2}
+  unselectedMaterial: {fileID: 2100000, guid: 2b39bee8cd4b2496c98ab0cd00e31359, type: 2}
+  hoverMaterial: {fileID: 2100000, guid: 608e2da486f654f8fb1488568e877d2e, type: 2}
+  selectedMaterial: {fileID: 2100000, guid: e8e5ff8d2008f4645abbf3c026fceaaf, type: 2}
+  dragMaterial: {fileID: 2100000, guid: 82e52b671772e45158733ec40dfc0038, type: 2}
 --- !u!1001 &2103761848
 Prefab:
   m_ObjectHideFlags: 0

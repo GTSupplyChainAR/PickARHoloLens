@@ -126,6 +126,10 @@ namespace PickAR.Navigation {
                 }
                 selectedConnector.gameObject.SetActive(connectorActive);
 
+				if (InputSwitcher.isHoloLens && Input.GetButtonDown(Buttons.SELECT)) {
+					waypoint.OnSelect();
+				}
+
                 if (Input.GetButtonDown(Buttons.DRAG)) {
                     Waypoint dragWaypoint = waypoint;
                     if (!isDragging && dragWaypoint != null) {

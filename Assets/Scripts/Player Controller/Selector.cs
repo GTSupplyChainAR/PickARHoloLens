@@ -58,12 +58,7 @@ namespace PlayerController {
         /// </summary>
         /// <returns>The selectable object currently being looked at, or null if there isn't any.</returns>
         public GameObject GetLookObject() {
-            Vector3 forward = playerCamera.transform.forward;
-            RaycastHit hit;
-            GameObject lookObject = null;
-            if (Physics.Raycast(playerCamera.transform.position, forward, out hit, maxSelectDistance, layerMask)) {
-                lookObject = hit.collider.gameObject;
-            }
+			GameObject lookObject = GazeGestureManager.GetFocusedObject();
             Selectable selectable = null;
             if (lookObject != null) {
                 selectable = lookObject.GetComponent<Selectable>();

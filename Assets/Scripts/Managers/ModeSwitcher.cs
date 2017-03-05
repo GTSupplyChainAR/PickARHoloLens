@@ -46,11 +46,9 @@ namespace PickAR.Managers {
         /// Updates the object.
         /// </summary>
         private void Update() {
-            bool switchModes = false;
-            if (InputSwitcher.isDesktop) {
-                if (Input.GetButtonDown(Buttons.SWITCH)) {
-                    switchModes = true;
-                }
+			bool switchModes = false;
+            if (Input.GetButtonDown(Buttons.SWITCH)) {
+                switchModes = true;
             }
             if (switchModes) {
                 SwitchMode();

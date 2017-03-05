@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using PickAR.Managers;
 
 namespace PlayerController {
     /// <summary>
@@ -46,7 +47,9 @@ namespace PlayerController {
         /// Updates the player every physics tick.
         /// </summary>
         private void FixedUpdate() {
-            Move();
+			if (InputSwitcher.isDesktop) {
+				Move();
+			}
         }
 
         /// <summary>
