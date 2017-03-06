@@ -34,22 +34,7 @@ public class GazeGestureManager : MonoBehaviour
         // Figure out which hologram is focused this frame.
         GameObject oldFocusObject = FocusedObject;
 
-        // Do a raycast into the world based on the user's
-        // head position and orientation.
-        var headPosition = Camera.main.transform.position;
-        var gazeDirection = Camera.main.transform.forward;
-
-        RaycastHit hitInfo;
-        if (Physics.Raycast(headPosition, gazeDirection, out hitInfo))
-        {
-            // If the raycast hit a hologram, use that as the focused object.
-            FocusedObject = hitInfo.collider.gameObject;
-        }
-        else
-        {
-            // If the raycast did not hit a hologram, clear the focused object.
-            FocusedObject = null;
-        }
+		FocusedObject = GetFocusedObject();
 
         // If the focused object changed this frame,
         // start detecting fresh gestures again.
@@ -59,4 +44,27 @@ public class GazeGestureManager : MonoBehaviour
             recognizer.StartCapturingGestures();
         }
     }
+
+	/// <summary>
+	/// Gets the object being looked at by the camera.
+	/// </summary>
+	/// <returns>The object being looked at by the camera.</returns>
+	public static GameObject GetFocusedObject() {
+		// Do a raycast into the world based on the user's
+		// head position and orientation.
+		var headPosition = Camera.main.transform.position;
+		var gazeDirection = Camera.main.transform.forward;
+
+		RaycastHit hitInfo;
+		if (Physics.Raycast(headPosition, gazeDirection, out hitInfo))
+		{
+			// If the raycast hit a hologram, use that as the focused object.
+			return hitInfo.collider.gameObject;
+		}
+		else
+		{
+			// If the raycast did not hit a hologram, clear the focused object.
+			return null;
+		}
+	}
 }
