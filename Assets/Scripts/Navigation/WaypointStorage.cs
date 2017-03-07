@@ -103,7 +103,7 @@ namespace PickAR.Navigation {
                     return waypoints;
                 } else {
                     Debug.Log("Using default waypoint file.");
-                    #if UNITY_STANDALONE_WIN
+					#if UNITY_EDITOR_WIN
                     byte[] bytes = UnityEngine.Windows.File.ReadAllBytes(defaultFile);
                     #else
                     byte[] bytes = File.ReadAllBytes(defaultFile);

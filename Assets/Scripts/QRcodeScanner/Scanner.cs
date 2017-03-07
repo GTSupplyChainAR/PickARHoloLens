@@ -9,22 +9,23 @@ public class Scanner : MonoBehaviour
     {
         this.textMesh = this.textMeshObject.GetComponent<TextMesh>();
         this.OnReset();
+		//this.OnScan();
     }
     public void OnScan()
     {
         this.textMesh.text = "scanning for 30s";
 
 #if !UNITY_EDITOR
-    MediaFrameQrProcessing.Wrappers.ZXingQrCodeScanner.ScanFirstCameraForQrCode(
-        result =>
-        {
-          UnityEngine.WSA.Application.InvokeOnAppThread(() =>
-          {
-            this.textMesh.text = result?.Text ?? "not found";
-          }, 
-          false);
-        },
-        TimeSpan.FromSeconds(30));
+//    MediaFrameQrProcessing.Wrappers.ZXingQrCodeScanner.ScanFirstCameraForQrCode(
+//        result =>
+//        {
+//          UnityEngine.WSA.Application.InvokeOnAppThread(() =>
+//          {
+//		this.textMesh.text = result?.Text ?? "not found";
+//          }, 
+//          false);
+//        },
+//        TimeSpan.FromSeconds(30));
 #endif
     }
     public void OnReset()
