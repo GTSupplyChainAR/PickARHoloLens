@@ -6,6 +6,8 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 0
-    path: Assets/Origami.unity
-  - enabled: 1
     path: Assets/Scenes/Warehouse.unity
+  - enabled: 0
+    path: Assets/Scenes/Warehouse 1.unity
+  - enabled: 1
+    path: Assets/Scenes/Warehouse scanning.unity

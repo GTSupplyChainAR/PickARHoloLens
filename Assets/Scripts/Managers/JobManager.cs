@@ -94,7 +94,7 @@ namespace PickAR.Managers {
         /// <summary>
         /// Starts the hard-coded, default job.
         /// </summary>
-        private void StartDefaultJob() {
+        public void StartDefaultJob() {
             CreateJob(targetArray);
         }
 
@@ -132,6 +132,9 @@ namespace PickAR.Managers {
         /// </summary>
         /// <param name="itemID">The ID of the item being collected.</param>
         public void SelectItem(int itemID) {
+            if (ModeSwitcher.isWaypointPlacement) {
+                return;
+            } 
             foreach (Item item in targetItems) {
                 if (item.itemID == itemID) {
                     RemoveItem(item);
@@ -160,13 +163,21 @@ namespace PickAR.Managers {
         }
 
         /// <summary>
-        /// Does something when the job is complete.
+        /// Plays a sound and removes navigation lines when the job is complete.
         /// </summary>
         public void CompleteJob() {
             SetJobActive(false);
             Navigator.instance.RemoveLines();
             SoundManager.instance.PlaySound(SoundManager.Sound.Finish);
             StartCoroutine(RestartJob());
+        }
+
+        /// <summary>
+        /// Cancels the current job immediately.
+        /// </summary>
+        public void CancelJob() {
+            SetJobActive(false);
+            Navigator.instance.RemoveLines();
         }
 
         /// <summary>
