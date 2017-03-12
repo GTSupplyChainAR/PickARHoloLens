@@ -62,7 +62,6 @@ namespace PickAR.Scanning {
             capture = captureObject;
             
             IEnumerable<Resolution> resolutions = PhotoCapture.SupportedResolutions;
-            Resolution bestResolution = null;
             int bestResolutionNum = int.MaxValue;
             foreach (Resolution resolution in resolutions) {
                 int currentNum = resolution.width * resolution.height;
@@ -75,7 +74,7 @@ namespace PickAR.Scanning {
             cameraParameters.cameraResolutionWidth = bestResolution.width;
             cameraParameters.cameraResolutionHeight = bestResolution.height;
 
-            capture.StartPhotoModeAsync(cameraParameters, false, OnPhotoModeStarted);
+            capture.StartPhotoModeAsync(cameraParameters, OnPhotoModeStarted);
         }
 
         /// <summary>
@@ -99,18 +98,20 @@ namespace PickAR.Scanning {
             if (result.success) {
                 List<byte> imageBufferList = new List<byte>();
                 // Copy the raw IMFMediaBuffer data into our empty byte list.
-                photoCaptureFrame.CopyRawImageDataIntoBuffer(imageBufferList);
-                imageBufferList.Reverse();
+                photoCaptureFrame.CopyRawImageDataIntoBuffer(imageBufferList); 
                 byte[] imageArray = imageBufferList.ToArray();
 
-                #if !UNITY_EDITOR
+                string text = "Nothing";
+
+#if !UNITY_EDITOR
                 BarcodeReader reader = new BarcodeReader();
                 reader.Options.PossibleFormats = new BarcodeFormat[] { BarcodeFormat.CODE_128 };
-                Result result = reader.Decode(imageArray, cameraParameters.cameraResolutionWidth, cameraParameters.cameraResolutionHeight, BitmapFormat.BGRA32);
-                if (result) {
-                    String text = result.Text;
+                Result decodeResult = reader.Decode(imageArray, cameraParameters.cameraResolutionWidth, cameraParameters.cameraResolutionHeight, BitmapFormat.BGRA32);
+                    text = decodeResult.Text;
                 }
-                #endif
+#endif
+
+                textMesh.text = text;
             }
             capture.StopPhotoModeAsync(OnStoppedPhotoMode);
         }
