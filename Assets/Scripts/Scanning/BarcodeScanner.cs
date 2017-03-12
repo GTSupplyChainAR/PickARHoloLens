@@ -62,6 +62,7 @@ namespace PickAR.Scanning {
             capture = captureObject;
             
             IEnumerable<Resolution> resolutions = PhotoCapture.SupportedResolutions;
+            Resolution bestResolution = new Resolution();
             int bestResolutionNum = int.MaxValue;
             foreach (Resolution resolution in resolutions) {
                 int currentNum = resolution.width * resolution.height;
@@ -107,6 +108,7 @@ namespace PickAR.Scanning {
                 BarcodeReader reader = new BarcodeReader();
                 reader.Options.PossibleFormats = new BarcodeFormat[] { BarcodeFormat.CODE_128 };
                 Result decodeResult = reader.Decode(imageArray, cameraParameters.cameraResolutionWidth, cameraParameters.cameraResolutionHeight, BitmapFormat.BGRA32);
+                if (decodeResult != null) {
                     text = decodeResult.Text;
                 }
 #endif
