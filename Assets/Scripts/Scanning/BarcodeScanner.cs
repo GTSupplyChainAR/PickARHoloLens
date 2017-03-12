@@ -30,6 +30,13 @@ namespace PickAR.Scanning {
         /// <summary> Variables to pass into photo capture. </summary>
         private CameraParameters cameraParameters;
 
+        /// <summary> The rate that scanning takes place at (seconds). </summary>
+        private const float SCAN_RATE = 2.0f;
+#if !UNITY_EDITOR
+        /// <summary> The possible barcode formats that the scanner can read. </summary>
+        private static BarcodeFormat[] formats = new BarcodeFormat[] { BarcodeFormat.CODE_128 };
+#endif
+
         /// <summary>
         /// Initializes the object.
         /// </summary>
@@ -38,10 +45,9 @@ namespace PickAR.Scanning {
             cameraParameters.hologramOpacity = 0.0f;
             cameraParameters.pixelFormat = CapturePixelFormat.BGRA32;
 
-            this.textMesh = this.textMeshObject.GetComponent<TextMesh>();
-            OnReset();
+            textMesh = textMeshObject.GetComponent<TextMesh>();
             if (InputSwitcher.isHoloLens) {
-                InvokeRepeating("StartScan", 2.0f, 5.0f);
+                InvokeRepeating("StartScan", SCAN_RATE, SCAN_RATE);
             }
         }
 
@@ -49,7 +55,10 @@ namespace PickAR.Scanning {
         /// Initializes the photo capture on the HoloLens.
         /// </summary>
         private void StartScan() {
-            this.textMesh.text = "scanning...";
+            if (!JobManager.instance.jobActive) {
+                return;
+            }
+            textMesh.text = "scanning...";
 
             PhotoCapture.CreateAsync(false, OnPhotoCaptureCreated);
         }
@@ -106,7 +115,7 @@ namespace PickAR.Scanning {
 
 #if !UNITY_EDITOR
                 BarcodeReader reader = new BarcodeReader();
-                reader.Options.PossibleFormats = new BarcodeFormat[] { BarcodeFormat.CODE_128 };
+                reader.Options.PossibleFormats = formats;
                 Result decodeResult = reader.Decode(imageArray, cameraParameters.cameraResolutionWidth, cameraParameters.cameraResolutionHeight, BitmapFormat.BGRA32);
                 if (decodeResult != null) {
                     text = decodeResult.Text;
@@ -114,6 +123,7 @@ namespace PickAR.Scanning {
 #endif
 
                 textMesh.text = text;
+                // JobManager.instance.SelectItem(text);
             }
             capture.StopPhotoModeAsync(OnStoppedPhotoMode);
         }
@@ -125,16 +135,6 @@ namespace PickAR.Scanning {
         private void OnStoppedPhotoMode(PhotoCapture.PhotoCaptureResult result) {
             capture.Dispose();
             capture = null;
-        }
-
-        /// <summary>
-        /// Resets the scanning state.
-        /// </summary>
-        private void OnReset() {
-            if (itemID != -1) {
-                JobManager.instance.SelectItem(itemID);
-            }
-            this.textMesh.text = "say scan to start";
         }
     }
 }
