@@ -103,11 +103,7 @@ namespace PickAR.Navigation {
                     return waypoints;
                 } else {
                     Debug.Log("Using default waypoint file.");
-                    #if UNITY_STANDALONE_WIN
-                    byte[] bytes = System.IO.File.ReadAllBytes(defaultFile);
-                    #else
                     byte[] bytes = File.ReadAllBytes(defaultFile);
-                    #endif
                     json = System.Text.Encoding.ASCII.GetString(bytes);
                 }
             }
