@@ -111,14 +111,16 @@ namespace PickAR.Scanning {
                 photoCaptureFrame.CopyRawImageDataIntoBuffer(imageBufferList); 
                 byte[] imageArray = imageBufferList.ToArray();
 
-                string text = "Nothing";
+                string text = "Error";
 
 #if !UNITY_EDITOR
                 BarcodeReader reader = new BarcodeReader();
                 reader.Options.PossibleFormats = formats;
-                Result decodeResult = reader.Decode(imageArray, cameraParameters.cameraResolutionWidth, cameraParameters.cameraResolutionHeight, BitmapFormat.BGRA32);
+                Result decodeResult = reader.Decode(imageArray, cameraParameters.cameraResolutionWidth, cameraParameters.cameraResolutionHeight, RGBLuminanceSource.BitmapFormat.BGRA32);
                 if (decodeResult != null) {
                     text = decodeResult.Text;
+                } else {
+                    text = "Nothing";
                 }
 #endif
 
