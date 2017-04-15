@@ -47,6 +47,11 @@ namespace PickAR.Managers {
         [Tooltip("The navigation UIs for each input.")]
         private GameObject[] navigationScreens;
 
+        /// <summary> Virtual objects to make invisible in HoloLens mode. </summary>
+        [SerializeField]
+        [Tooltip("Virtual objects to make invisible in HoloLens mode.")]
+        private GameObject[] virtualObjects;
+
         /// <summary> The camera keeping track of the user. </summary>
         public Camera playerCamera {
             get;
@@ -67,7 +72,6 @@ namespace PickAR.Managers {
 
             playerCamera = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Camera>();
 
-            bool isDesktop = inputType == InputType.Desktop;
             GameObject player = null;
             foreach (GameObject desktopObject in desktopObjects) {
                 desktopObject.SetActive(isDesktop);
@@ -83,6 +87,14 @@ namespace PickAR.Managers {
 
             if (isDesktop) {
                 playerCamera.transform.parent = player.transform;
+            }
+
+            if (isHoloLens) {
+                foreach (GameObject virtualObject in virtualObjects) {
+                    foreach (Renderer renderer in virtualObject.GetComponentsInChildren<Renderer>()) {
+                        renderer.enabled = false;
+                    }
+                }
             }
         }
 
