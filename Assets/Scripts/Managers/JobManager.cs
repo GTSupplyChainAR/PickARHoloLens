@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using PickAR.Logging;
 using PickAR.Navigation;
 using PickAR.Objects;
 
@@ -69,6 +70,9 @@ namespace PickAR.Managers {
         [Tooltip("Debug items to be targeted by the user.")]
         private Item[] targetArray;
 
+        /// <summary> Logs timestamps for job events. </summary>
+        private JobLogger jobLogger;
+
         /// <summary> The singleton instance of the object. </summary>
         public static JobManager instance {
             get;
@@ -86,6 +90,7 @@ namespace PickAR.Managers {
         /// Initializes the object.
         /// </summary>
         private void Start() {
+            jobLogger = GetComponent<JobLogger>();
             targetItems = new List<Item>();
             progressFraction = 1;
             StartDefaultJob();
@@ -120,11 +125,13 @@ namespace PickAR.Managers {
             foreach (Item item in targetArray) {
                 targetItems.Add(item);
                 item.GetComponent<Renderer>().enabled = true;
+                item.GetComponent<Collider>().enabled = true;
             }
             totalItems = targetArray.Length;
             startPoint = user.transform.position;
             SetJobActive(true);
             progressFraction = 0;
+            jobLogger.StartLog();
         }
 
         /// <summary>
@@ -151,6 +158,7 @@ namespace PickAR.Managers {
         public void RemoveItem(Item item) {
             targetItems.Remove(item);
             item.GetComponent<Renderer>().enabled = false;
+            item.GetComponent<Collider>().enabled = false;
             refreshItems = true;
             if (targetItems.Count == 0) {
                 SoundManager.instance.PlaySound(SoundManager.Sound.CollectAll);
@@ -160,6 +168,7 @@ namespace PickAR.Managers {
                 SoundManager.instance.PlaySound(SoundManager.Sound.Correct);
                 progressFraction = (totalItems - remainingItems) / (float) totalItems;
             }
+            jobLogger.LogItem(item.itemID);
         }
 
         /// <summary>
@@ -169,6 +178,7 @@ namespace PickAR.Managers {
             SetJobActive(false);
             Navigator.instance.RemoveLines();
             SoundManager.instance.PlaySound(SoundManager.Sound.Finish);
+            jobLogger.EndLog();
             StartCoroutine(RestartJob());
         }
 
