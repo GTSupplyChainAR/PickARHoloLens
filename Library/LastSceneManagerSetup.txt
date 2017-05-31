@@ -1,0 +1,4 @@
+sceneSetups:
+- path: C:/Users/Ned Tugent/Desktop/Project Files/PickAR-d23cd04c8e8ffdf48cbd9a5efff3ec1920e67e18/Assets/Scenes/Warehouse.unity
+  isLoaded: 1
+  isActive: 1

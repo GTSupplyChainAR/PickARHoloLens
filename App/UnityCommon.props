@@ -1,0 +1,10 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <UnityWSASolutionName>PickAR</UnityWSASolutionName>
+        <UnityWSASolutionDir>C:\Users\Ned Tugent\Desktop\Project Files\PickAR\PickAR-barcodescanning\App\</UnityWSASolutionDir>
+        <UnityProjectDir>C:\Users\Ned Tugent\Desktop\Project Files\PickAR\PickAR-barcodescanning\</UnityProjectDir>
+        <UnityWSAPlayerDir>C:\Program Files\Unity 5.5.1f1\Editor\Data\PlaybackEngines\MetroSupport\</UnityWSAPlayerDir>
+        <UnityWSAToolsDir>$(UnityWSASolutionDir)Unity\Tools\</UnityWSAToolsDir>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    </PropertyGroup>
+</Project>
